@@ -2,8 +2,6 @@
 
 # Chat Session Management System
 
-![Chat Session Interface]
-
 A full-stack solution for managing chat sessions between customers and support agents, featuring a robust backend API and modern frontend interface.
 
 ## Features
@@ -51,15 +49,6 @@ A full-stack solution for managing chat sessions between customers and support a
    - 🔴 `error`: Something went wrong
    - ⚪ `inactive`: Session timed out
 
-## Screenshots
-
-| Create Session | Poll Session |
-|----------------|--------------|
-| ![Create Session](https://via.placeholder.com/250x200?text=Create+Session) | ![Poll Session](https://via.placeholder.com/250x200?text=Poll+Session) |
-
-| Status Display | Error Handling |
-|----------------|----------------|
-| ![Status Display](https://via.placeholder.com/250x200?text=Status+Display) | ![Error Handling](https://via.placeholder.com/250x200?text=Error+Handling) |
 
 ## API Endpoints
 
@@ -69,10 +58,4 @@ A full-stack solution for managing chat sessions between customers and support a
 | `/api/Chat/Poll` | POST | Check session status | `{ status: "assigned", agent: "John" }` |
 
 
-
-**Components**:  
-- **SessionProcessorService**: Handles initial session routing  
-- **InactivityMonitorService**: Tracks session activity  
-- **ShiftMonitorService**: Manages team rotations  
-- **AgentAssignmentService**: Processes agent-specific queues  
 
