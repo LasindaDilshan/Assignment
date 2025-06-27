@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chat Session</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      max-width: 500px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background: #f9fafb;
+      border-radius: 8px;
+      box-shadow: 0 0 12px #ccc;
+    }
+    h1 { text-align: center; color: #0078d7; }
+    label, input, button { display: block; width: 100%; margin-top: 1rem; }
+    input { padding: 0.6rem; font-size: 1rem; border-radius: 4px; border: 1px solid #ccc; }
+    button {
+      padding: 0.7rem; margin-top: 1rem;
+      background-color: #0078d7; color: white;
+      border: none; border-radius: 4px; font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background-color: #005a9e; }
+    #responseOutput {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #eef6ff;
+      border-left: 5px solid #0078d7;
+      border-radius: 5px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    .status-pending { color: #d88700; }
+    .status-assigned { color: green; }
+    .status-error, .status-not_found { color: red; }
+  </style>
+</head>
+<body>
+
+<h1>Chat Session</h1>
+
+<button id="createBtn">Create Session</button>
+
+<label for="sessionId">Session ID</label>
+<input type="text" id="sessionId" placeholder="Paste session ID here" />
+
+<button id="pollBtn">Poll Session</button>
+
+<div id="responseOutput"></div>
+
+<script>
+const createBtn = document.getElementById('createBtn');
+const pollBtn = document.getElementById('pollBtn');
+const sessionIdInput = document.getElementById('sessionId');
+const responseOutput = document.getElementById('responseOutput');
+
+const baseUrl = 'https://localhost:7296/api/Chat';
+
+function showResponse(data, cssClass) {
+  responseOutput.className = cssClass;
+
+  let agentDisplay = "";
+  if (data.agent && data.agent.trim() !== "") {
+    agentDisplay = `<div><strong>Agent:</strong> ${data.agent}</div>`;
+  }
+
+  responseOutput.innerHTML = `
+    <div><strong>Status:</strong> ${data.status}</div>
+    <div><strong>Message:</strong> ${data.message}</div>
+    ${agentDisplay}
+  `;
+}
+
+createBtn.addEventListener('click', async () => {
+  responseOutput.textContent = 'Creating session...';
+  responseOutput.className = '';
+  try {
+    const res = await fetch(`${baseUrl}/CreateSession`, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' }
+    });
+    const data = await res.json();
+
+    if (data.status === 'available') {
+      sessionIdInput.value = data.sessionId;
+      showResponse(data, 'status-assigned');
+    } else {
+      showResponse(data, 'status-pending');
+    }
+  } catch (err) {
+    showResponse({ status: 'error', message: err.message }, 'status-error');
+  }
+});
+
+pollBtn.addEventListener('click', async () => {
+  const sessionId = sessionIdInput.value.trim();
+  if (!sessionId) {
+    showResponse({ status: 'error', message: 'Please enter a session ID.' }, 'status-error');
+    return;
+  }
+
+  responseOutput.textContent = 'Polling session...';
+  responseOutput.className = '';
+  try {
+    const res = await fetch(`${baseUrl}/Poll`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(sessionId)
+    });
+
+    const data = await res.json();
+    const cssClass = `status-${data.status}`;
+    showResponse(data, cssClass);
+  } catch (err) {
+    showResponse({ status: 'error', message: err.message }, 'status-error');
+  }
+});
+</script>
+
+</body>
+</html>
