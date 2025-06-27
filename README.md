@@ -2,7 +2,7 @@
 
 # Chat Session Management System
 
-![Chat Session Interface](https://via.placeholder.com/500x300?text=Chat+Session+Demo)
+![Chat Session Interface]
 
 A full-stack solution for managing chat sessions between customers and support agents, featuring a robust backend API and modern frontend interface.
 
